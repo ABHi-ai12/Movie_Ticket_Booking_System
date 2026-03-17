@@ -256,9 +256,13 @@ document.getElementById("orderForm").addEventListener("submit", e => {
 
   orderModal.style.display = "none";
 
-  // Generate a collision-resistant order ID: timestamp + 4-digit random suffix
-  const orderId = "FE" + Date.now().toString().slice(-8) +
-    Math.floor(1000 + Math.random() * 9000);
+  // Generate a unique order ID using crypto.randomUUID() when available,
+  // falling back to timestamp + random suffix for older browsers.
+  const orderId = "FE" + (
+    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID().replace(/-/g, "").slice(0, 10).toUpperCase()
+      : Date.now().toString().slice(-8) + Math.floor(1000 + Math.random() * 9000)
+  );
   document.getElementById("successMsg").innerHTML =
     `Hi <strong>${name}</strong>! Your order <strong>#${orderId}</strong> has been placed.<br>
      Total: <strong>${total}</strong> via ${payLabel}.<br>
